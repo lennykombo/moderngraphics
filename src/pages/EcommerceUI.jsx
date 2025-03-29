@@ -55,7 +55,7 @@ const EcommerceUI = () => {
     useEffect(() => {
       const fetchProducts = async () => {
         try {
-          const querySnapshot = await getDocs(collection(db, "products")); // Ensure "products" is the correct collection name
+          const querySnapshot = await getDocs(collection(db, "products")); 
           const productsData = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
@@ -106,7 +106,7 @@ const EcommerceUI = () => {
           <img
             src={bannersImage}
             alt="Promotional Banner"
-            className="absolute top-0 left-0 w-full h-full object-fill xl:object-top"
+            className="absolute top-5 left-0 w-full h-full object-fill xl:object-top"
           />
         ) : (
           <p className="text-gray-500">Loading banner...</p>
