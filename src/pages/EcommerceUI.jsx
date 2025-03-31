@@ -101,7 +101,7 @@ const EcommerceUI = () => {
       <Topnav/>
       {/* Header with Logo and Banner */}
     
-      <header className="relative w-full h-[40vh] md:h-[50vh] xl:h-[60vh] p-1 flex items-center justify-center text-white text-center mt-16 xl:mt-20 overflow-hidden hidden md:flex">
+      {/*<header className="relative w-full h-[40vh] md:h-[50vh] xl:h-[60vh] p-1 flex items-center justify-center text-white text-center mt-16 xl:mt-20 overflow-hidden hidden md:flex">
         {bannersImage ? (
           <img
             src={bannersImage}
@@ -111,10 +111,22 @@ const EcommerceUI = () => {
         ) : (
           <p className="text-gray-500">Loading banner...</p>
         )}
-      </header>
+      </header>*/}
+      <header className="relative w-full h-[20vh] md:h-[50vh] xl:h-[60vh] p-1 flex items-center justify-center text-white text-center mt-16 xl:mt-20 overflow-hidden block md:flex">
+  {bannersImage ? (
+    <img
+      src={bannersImage}
+      alt="Promotional Banner"
+      className="absolute top-4 left-0 w-full h-full object-fill md:object-fill xl:object-top"
+    />
+  ) : (
+    <p className="text-gray-500">Loading banner...</p>
+  )}
+</header>
+
       <div className="flex flex-1 flex-col md:flex-row">
         {/* Sidebar */}
-        <aside className="w-full md:w-64 bg-gray-100 p-4 border-r mt-20">
+        {/*<aside className="w-full md:w-64 bg-gray-100 p-4 border-r mt-20">
           <h2 className="text-xl font-bold mb-4">Categories</h2>
           <ul className="flex flex-wrap gap-2 md:block ">
             {categories.map((category) => (
@@ -129,7 +141,42 @@ const EcommerceUI = () => {
               </li>
             ))}
           </ul>
-        </aside>
+        </aside>*/}
+        <aside className="w-full md:w-64 bg-gray-100 p-4 border-r mt-2">
+  <h2 className="text-xl font-bold mb-4">Categories</h2>
+
+  {/* Dropdown for Small Screens */}
+  <div className="md:hidden mb-4">
+    <select
+      className="w-full p-2 border rounded"
+      onChange={(e) => setSelectedCategory(e.target.value)}
+      value={selectedCategory || ""}
+    >
+      <option value="">Choose Categories</option>
+      {categories.map((category) => (
+        <option key={category.id} value={category.name}>
+          {category.name}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* Sidebar for Larger Screens */}
+  <ul className="hidden md:block">
+    {categories.map((category) => (
+      <li key={category.id} className="mb-2">
+        <Button
+          variant="ghost"
+          className="w-full md:w-auto text-left"
+          onClick={() => setSelectedCategory(category.name)}
+        >
+          {category.name}
+        </Button>
+      </li>
+    ))}
+  </ul>
+</aside>
+
 
         {/* Main Content */}
         <main className="flex-1 p-6">
