@@ -105,7 +105,7 @@ const ProductDetail = () => {
 
         <div className="flex-1 flex flex-col md:flex-row items-center">
           {selectedMedia.includes(".mp4") ? (
-            <video src={selectedMedia} controls className="w-full max-w-lg h-96 object-cover rounded-md" />
+            <video src={selectedMedia} controls className="w-full max-w-lg h-96 object-cover rounded-md self-center pr-2" />
           ) : (
             <img src={selectedMedia} alt={product.name} className="w-3/4 max-w-lg max-h-96 object-contain rounded-md " />
           )}
