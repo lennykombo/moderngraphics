@@ -1,209 +1,164 @@
 import { useState, useEffect } from "react";
 import { db } from "../components/firebaseconfig";
-import { collection, addDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import Productcard from "../components/Productcard";
-//import bannerImage from "../assets/bunner2.png";
-import { products } from "../components/data";
 import Topnav from "../components/Topnav";
+import Footer from "../components/Footer";
 
-
-function Button({ children, className, onClick, variant = "default" }) {
-  const variants = {
-    default: "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600",
-    ghost: "text-gray-700 px-4 py-2 rounded hover:bg-gray-200",
-  };
-  return (
-    <button className={`${variants[variant]} ${className}`} onClick={onClick}>
-      {children}
-    </button>
-  );
-}
 
 const EcommerceUI = () => {
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
-  const [categories, setcategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
- // const [loadingCategories, setLoadingCategories] = useState(true);
-/* const [banner, setBanner] = useState(null);
-  const [preview, setPreview] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");*/
-  const [bannersImage, setBannerImage] = useState([]);
+  const [bannerImages, setBannerImages] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const querySnapshot = await getDocs(collection(db, "categories"));
+      setCategories(querySnapshot.docs.map(doc => ({ id: doc.id, name: doc.data().name })));
+    };
+    fetchCategories();
+  }, []);
 
-  // Fetch categories from Firestore
-    useEffect(() => {
-      const fetchCategories = async () => {
-        //setLoadingCategories(true);
-        try {
-          const querySnapshot = await getDocs(collection(db, "categories"));
-          const categoriesData = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            name: doc.data().name,
-          }));
-          setcategories(categoriesData);
-        } catch (error) {
-          console.error("Error fetching categories:", error);
-        }
-       // setLoadingCategories(false);
-      };
-  
-      fetchCategories();
-    }, []);
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      setProducts(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    };
+    fetchProducts();
+  }, []);
 
-    useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const querySnapshot = await getDocs(collection(db, "products")); 
-          const productsData = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setProducts(productsData);
-        } catch (error) {
-          console.error("Error fetching products:", error);
-        }
-      };
-    
-      fetchProducts();
-    }, []);
-    console.log("Fetched Products:", products);
-
- // Fetch the latest banner from Firestore
- useEffect(() => {
-  const fetchLatestBanner = async () => {
-    try {
-      const bannersCollection = collection(db, "banners");
-      const bannersQuery = query(bannersCollection, orderBy("timestamp", "desc"), limit(1));
-      const querySnapshot = await getDocs(bannersQuery);
-
-      if (!querySnapshot.empty) {
-        const latestBanner = querySnapshot.docs[0].data();
-        setBannerImage(latestBanner.imageUrl);
+   // Fetch banners
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const q = query(collection(db, "banners"), orderBy("timestamp", "desc"));
+        const snap = await getDocs(q);
+        const urls = snap.docs.map((d) => d.data().imageUrl).filter(Boolean);
+        setBannerImages(urls);
+      } catch (err) {
+        console.error("Error fetching banners:", err);
       }
-    } catch (error) {
-      console.error("Error fetching latest banner:", error);
-    }
-  };
-  fetchLatestBanner();
-}, []);
+    };
+    fetchBanners();
+  }, []);
 
-  const filteredProducts = products.filter((p) => {
-    return (
-      (!selectedCategory || p.category === selectedCategory) &&
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+
+  // Auto-slide
+  useEffect(() => {
+    if (bannerImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % bannerImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [bannerImages]);
+
+
+  const filteredProducts = products.filter(p =>
+    (selectedCategory === "All" || p.category === selectedCategory) &&
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Topnav/>
-      {/* Header with Logo and Banner */}
-    
-      {/*<header className="relative w-full h-[40vh] md:h-[50vh] xl:h-[60vh] p-1 flex items-center justify-center text-white text-center mt-16 xl:mt-20 overflow-hidden hidden md:flex">
-        {bannersImage ? (
-          <img
-            src={bannersImage}
-            alt="Promotional Banner"
-            className="absolute top-5 left-0 w-full h-full object-fill xl:object-top"
-          />
-        ) : (
-          <p className="text-gray-500">Loading banner...</p>
-        )}
-      </header>*/}
-      <header className="relative w-full h-[20vh] md:h-[50vh] xl:h-[60vh] p-1 flex items-center justify-center text-white text-center mt-16 xl:mt-20 overflow-hidden block md:flex">
-  {bannersImage ? (
-    <img
-      src={bannersImage}
-      alt="Promotional Banner"
-      className="absolute top-4 left-0 w-full h-full object-fill md:object-fill xl:object-top"
-    />
-  ) : (
-    <p className="text-gray-500">Loading banner...</p>
-  )}
-</header>
+      <Topnav />
 
-      <div className="flex flex-1 flex-col md:flex-row">
-        {/* Sidebar */}
-        {/*<aside className="w-full md:w-64 bg-gray-100 p-4 border-r mt-20">
-          <h2 className="text-xl font-bold mb-4">Categories</h2>
-          <ul className="flex flex-wrap gap-2 md:block ">
-            {categories.map((category) => (
-              <li key={category.id} className="mb-2">
-                <Button
-                  variant="ghost"
-                  className="w-full md:w-auto text-left"
-                  onClick={() => setSelectedCategory(category.name)}
-                >
-                  {category.name}
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </aside>*/}
-        <aside className="w-full md:w-64 bg-gray-100 p-4 border-r mt-2">
-  <h2 className="text-xl font-bold mb-4">Categories</h2>
-
-  {/* Dropdown for Small Screens */}
-  <div className="md:hidden mb-4">
-    <select
-      className="w-full p-2 border rounded"
-      onChange={(e) => setSelectedCategory(e.target.value)}
-      value={selectedCategory || ""}
+      {/* HERO SECTION */}
+    <section className="flex flex-col-reverse md:flex-row items-center justify-between mt-20 px-8 md:px-16 py-12">
+  {/* Left (on desktop) / Bottom (on mobile): Text + Button */}
+  <div className="w-full md:w-1/2 mt-8 md:mt-0">
+    <h1 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900">
+      Timeless Personalized Gifts
+    </h1>
+    <p className="text-gray-600 mb-6 text-lg">
+      Crafted to celebrate life’s moments with a touch of elegance.
+    </p>
+    <button
+      onClick={() =>
+        document
+          .getElementById("products-section")
+          ?.scrollIntoView({ behavior: "smooth" })
+      }
+      className="bg-purple-500 text-white px-6 py-2 rounded-md hover:bg-gray-800 transition"
     >
-      <option value="">Choose Categories</option>
-      {categories.map((category) => (
-        <option key={category.id} value={category.name}>
-          {category.name}
-        </option>
-      ))}
-    </select>
+      Shop Now
+    </button>
   </div>
 
-  {/* Sidebar for Larger Screens */}
-  <ul className="hidden md:block">
-    {categories.map((category) => (
-      <li key={category.id} className="mb-2">
-        <Button
-          variant="ghost"
-          className="w-full md:w-auto text-left"
-          onClick={() => setSelectedCategory(category.name)}
-        >
-          {category.name}
-        </Button>
-      </li>
-    ))}
-  </ul>
-</aside>
-
-
-        {/* Main Content */}
-        <main className="flex-1 p-6">
-          {/* Search Bar */}
-          <div className="flex items-center border-b pb-2 mb-4">
-            <input
-              type="text"
-              placeholder="Search products..."
-              className="w-full p-2 outline-none"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          
-          <h2 className="text-2xl font-bold mb-4">
-           {selectedCategory || "All Products"}
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {filteredProducts.map((product) => (
-              <Productcard key={product.id} product={{ ...product, image: product.images?.[0] }} />
-            ))}
-          </div>
-        </main>
+  {/* Right (on desktop) / Top (on mobile): Sliding Image */}
+  <div className="w-full md:w-1/2 relative h-72 md:h-96 overflow-hidden rounded-lg shadow-md">
+    {bannerImages.length > 0 ? (
+      bannerImages.map((src, i) => (
+        <img
+          key={i}
+          src={src}
+          alt={`banner-${i}`}
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+            i === currentIndex ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      ))
+    ) : (
+      <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+        Loading banners...
       </div>
+    )}
+  </div>
+</section>
+
+
+      {/* CATEGORY & PRODUCTS SECTION */}
+      <section className="w-full px-6 md:px-16 py-12">
+        <h2 className="text-2xl font-bold text-center mb-6">Our Products</h2>
+
+        {/* Category Tabs */}
+        <div className="flex justify-center flex-wrap gap-4 mb-6">
+          <button
+            onClick={() => setSelectedCategory("All")}
+            className={`px-4 py-2 border-b-2 ${selectedCategory === "All" ? "border-black text-black" : "border-transparent text-gray-500"} hover:text-black`}
+          >
+            All
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.name)}
+              className={`px-4 py-2 border-b-2 ${selectedCategory === cat.name ? "border-black text-black" : "border-transparent text-gray-500"} hover:text-black`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <div className="max-w-md mx-auto mb-8">
+          <input
+            type="text"
+            placeholder="Search Products"
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        {/* Product Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+         {filteredProducts.map(product => (
+          <Productcard
+            key={product.id}
+            product={{ ...product, image: product.images?.[0] }}
+           />
+         ))}
+        </div>
+
+      </section>
+
+      {/* FOOTER */}
+     <Footer/>
     </div>
   );
-}
+};
 
-export default EcommerceUI
+export default EcommerceUI;
