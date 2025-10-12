@@ -6,7 +6,8 @@ const Productcard = ({ product }) => {
 
   return (
     <div
-      className="bg-white shadow-md rounded-lg p-3 sm:p-4 flex flex-col items-center cursor-pointer hover:shadow-lg transition-all h-[260px] sm:h-[300px] lg:h-[340px] xl:h-[380px]"
+      //className="bg-white shadow-md rounded-lg p-3 sm:p-4 flex flex-col items-center cursor-pointer hover:shadow-lg transition-all h-[260px] sm:h-[300px] lg:h-[340px] xl:h-[380px]"
+      className="bg-white border border-purple-200 p-3 sm:p-4 flex flex-col cursor-pointer hover:shadow-lg transition-all"
       onClick={() => navigate(`/product/${product.id}`)}
     >
       {/* Image */}
@@ -17,19 +18,19 @@ const Productcard = ({ product }) => {
       />
 
       {/* Name */}
-      <h3 className="font-semibold text-sm sm:text-base lg:text-lg xl:text-xl text-gray-800 text-center line-clamp-1">
+      <h3 className="font-semibold text-sm sm:text-base lg:text-base xl:text-lg text-gray-800 text-left line-clamp-1">
         {product.name}
       </h3>
 
       {/* Price */}
-      <p className="text-gray-600 text-xs sm:text-sm lg:text-base mt-1">
+      <p className="text-gray-600 text-xs sm:text-sm lg:text-sm mt-1 text-left">
         Ksh {product.price?.toLocaleString()}
       </p>
 
       {/* Button */}
-      <button className="mt-auto bg-purple-500 w-full text-white text-xs sm:text-sm lg:text-base px-3 py-1.5 lg:py-2 rounded-md hover:bg-purple-600 transition-all">
+      {/*<button className="mt-auto bg-purple-500 w-full text-white text-xs sm:text-sm lg:text-base px-3 py-1.5 lg:py-2 rounded-md hover:bg-purple-600 transition-all">
         View Product
-      </button>
+      </button>*/}
     </div>
   );
 };
