@@ -6,26 +6,31 @@ const Productcard = ({ product }) => {
 
   return (
     <div
-      className="bg-white border border-purple-200 p-3 sm:p-4 flex flex-col cursor-pointer hover:shadow-lg transition-all h-full"
+      // REMOVED: border, p-3, shadow, background color
+      // ADDED: 'group' so we can animate the image when hovering the text/card
+      className="flex flex-col cursor-pointer grou hover:shadow-lg hover:p-2"
       onClick={() => navigate(`/product/${product.id}`)}
     >
-      {/* Image */}
-      <img
-        src={product.image}
-        alt={product.name}
-        // CHANGED: Removed fixed heights (h-32, etc) and added 'aspect-square'
-        className="w-full aspect-square object-cover rounded-md mb-2"
-      />
+      {/* Image Container */}
+      <div className="w-full aspect-square overflow-hidden rounded-xl bg-gray-100 relative">
+        <img
+          src={product.image}
+          alt={product.name}
+          // aspect-square: Forces 1x1 ratio
+          // group-hover:scale-105: subtle zoom on hover
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
 
-      {/* Name */}
-      <h3 className="font-semibold text-sm sm:text-base lg:text-base xl:text-lg text-gray-800 text-left line-clamp-1">
-        {product.name}
-      </h3>
-
-      {/* Price */}
-      <p className="text-gray-600 text-xs sm:text-sm lg:text-sm mt-1 text-left">
-        Ksh {product.price?.toLocaleString()}
-      </p>
+      {/* Details */}
+      <div className="mt-3">
+        <h3 className="font-medium text-gray-900 text-sm sm:text-base line-clamp-1 group-hover:text-purple-600 transition-colors">
+          {product.name}
+        </h3>
+        <p className="text-gray-500 text-sm mt-1 font-semibold">
+          Ksh {product.price?.toLocaleString()}
+        </p>
+      </div>
     </div>
   );
 };
