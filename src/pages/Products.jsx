@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { db } from "../components/firebaseconfig";
-import { collection, addDoc, getDocs, updateDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import { MdClose, MdEdit } from "react-icons/md";
 import { FaTrash } from "react-icons/fa";
 
@@ -342,6 +342,29 @@ const handleAddProduct = async () => {
   }
 };
 
+const handleDeleteProduct = async (productId) => {
+  // 1. Confirm user intention
+  if (!window.confirm("Are you sure you want to delete this product?")) return;
+
+  try {
+    // 2. Delete from Firestore
+    await deleteDoc(doc(db, "products", productId));
+
+    // 3. Update local state to remove item immediately from UI
+    setProducts((prevProducts) => 
+      prevProducts.filter((product) => product.id !== productId)
+    );
+    
+    // 4. Close the menu
+    setEditMenuOpen(null);
+    
+    alert("Product deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    alert("Failed to delete product.");
+  }
+};
+
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -412,6 +435,7 @@ const handleAddProduct = async () => {
                       className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-2 text-red-500"
                       onClick={() => {
                         console.log("Deleting product:", product);
+                        handleDeleteProduct(product.id);
                         setEditMenuOpen(null);
                       }}
                     >
@@ -558,7 +582,7 @@ const handleAddProduct = async () => {
 
 {editProduct && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
+          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Edit Product</h2>
             <input
               type="text"

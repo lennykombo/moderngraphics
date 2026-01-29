@@ -8,7 +8,7 @@ const Productcard = ({ product }) => {
     <div
       // REMOVED: border, p-3, shadow, background color
       // ADDED: 'group' so we can animate the image when hovering the text/card
-      className="flex flex-col cursor-pointer grou hover:shadow-lg hover:p-2"
+      className="flex flex-col cursor-pointer grou hover:shadow-lg hover:p-2 rounded-lg"
       onClick={() => navigate(`/product/${product.id}`)}
     >
       {/* Image Container */}

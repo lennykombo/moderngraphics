@@ -21,6 +21,7 @@ const EcommerceUI = () => {
   const [products, setProducts] = useState([]);
   const [bannerImages, setBannerImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const containerRef = useRef();
 
@@ -75,7 +76,7 @@ const EcommerceUI = () => {
   // --- GSAP ANIMATIONS ---
 
   // 1. HERO ANIMATION (Typing + Fade Up)
-  useGSAP(() => {
+  /*useGSAP(() => {
     const tl = gsap.timeline();
 
     // A. Typewriter Effect
@@ -95,7 +96,7 @@ const EcommerceUI = () => {
     }, 0)*/
 
     // C. Fade in Paragraph, Button, and Image
-    .from(".hero-text-element", {
+    /*.from(".hero-text-element", {
       y: 20,
       opacity: 0,
       duration: 0.8,
@@ -109,6 +110,46 @@ const EcommerceUI = () => {
       duration: 1,
       ease: "power2.out"
     }, "<"); // Run at same time as paragraph
+
+  }, { scope: containerRef });*/
+
+  // 1. HERO ANIMATION (Typing + Fade Up)
+  useGSAP(() => {
+    const tl = gsap.timeline();
+
+    // A. Typewriter Effect
+    tl.to(".typing-target", {
+      text: "Timeless Personalized Gifts",
+      duration: 1.5,
+      ease: "none",
+    })
+    
+    // B. Fade in Paragraph & Button
+    // CHANGED: Use .fromTo() instead of .from()
+    // This forces the animation to explicitly animate TO opacity 1, preventing it from getting stuck.
+    .fromTo(".hero-text-element", 
+      { y: 20, opacity: 0 }, // Start state
+      { 
+        y: 0, 
+        opacity: 1, 
+        duration: 0.8, 
+        stagger: 0.2, 
+        ease: "power3.out" 
+      }, 
+      "-=0.5" // Overlap with typing
+    )
+    
+    // C. Fade in Hero Image
+    .fromTo(".hero-image", 
+      { x: 50, opacity: 0 }, 
+      { 
+        x: 0, 
+        opacity: 1, 
+        duration: 1, 
+        ease: "power2.out" 
+      }, 
+      "<" // Start at same time as text fade
+    );
 
   }, { scope: containerRef });
 
@@ -138,12 +179,12 @@ const EcommerceUI = () => {
   }, { dependencies: [filteredProducts], scope: containerRef });
 
   // 3. BANNER ZOOM ANIMATION
-  useGSAP(() => {
+  /*useGSAP(() => {
     gsap.fromTo(".active-banner-img",
       { scale: 1.1, opacity: 0.8 },
       { scale: 1, opacity: 1, duration: 4, ease: "power1.out" }
     );
-  }, { dependencies: [currentIndex], scope: containerRef });
+  }, { dependencies: [currentIndex], scope: containerRef });*/
 
 
   return (
@@ -173,7 +214,7 @@ const EcommerceUI = () => {
         </div>
 
         {/* Hero Image */}
-        <div className="hero-image w-full md:w-1/2 relative h-72 md:h-96 overflow-hidden rounded-lg shadow-md">
+        {/*<div className="hero-image w-full md:w-1/2 relative h-72 md:h-96 overflow-hidden rounded-lg shadow-md">
           {bannerImages.length > 0 ? (
             bannerImages.map((src, i) => (
               <img
@@ -190,7 +231,28 @@ const EcommerceUI = () => {
                Loading...
              </div>
           )}
-        </div>
+        </div>*/}
+        {/* Hero Image */}
+{/* Added bg-white to make it look clean if the image doesn't fill the whole box */}
+<div className="hero-image w-full md:w-3/4 relative h-72 md:h-96 overflow-hidden rounded-lg shadow-md bg-white">
+  {bannerImages.length > 0 ? (
+    bannerImages.map((src, i) => (
+      <img
+  key={i}
+  src={src}
+  alt={`banner-${i}`}
+  // CHANGED: 'object-fill' forces the image to stretch to the exact box size
+  className={`absolute inset-0 w-full h-full object-fill transition-opacity duration-1000 ${
+    i === currentIndex ? "opacity-100 active-banner-img" : "opacity-0"
+  }`}
+/>
+    ))
+  ) : (
+     <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+       Loading...
+     </div>
+  )}
+</div>
       </section>
 
       {/* PRODUCTS SECTION */}
@@ -198,7 +260,7 @@ const EcommerceUI = () => {
         <h2 className="text-2xl font-bold text-center mb-6">Our Products</h2>
 
         {/* Categories */}
-        <div className="border py-5 shadow-md flex justify-center flex-wrap gap-4 mb-6 p-3 rounded-md font-semibold">
+        {/*<div className="border py-5 shadow-md flex justify-center flex-wrap gap-4 mb-6 p-3 rounded-md font-semibold">
           <button
             onClick={() => setSelectedCategory("All")}
             // Updated styles for a cleaner look with shadows
@@ -223,7 +285,92 @@ const EcommerceUI = () => {
               {cat.name}
             </button>
           ))}
-        </div>
+        </div>*/}
+        {/* --- CATEGORIES SECTION --- */}
+<div className="mb-8">
+  
+  {/* MOBILE VIEW: Dropdown with Arrow */}
+  <div className="md:hidden relative w-full max-w-xs mx-auto">
+    {/* Dropdown Trigger Button */}
+    <button
+      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+      className="w-full flex items-center justify-between bg-white border border-gray-300 px-4 py-3 rounded-md shadow-sm text-gray-700 font-medium active:scale-95 transition-transform"
+    >
+      <span>{selectedCategory === "All" ? "Select Category" : selectedCategory}</span>
+      
+      {/* Arrow Icon (Rotates when open) */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={2}
+        stroke="currentColor"
+        className={`w-5 h-5 transition-transform duration-300 ${isDropdownOpen ? "rotate-180" : "rotate-0"}`}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+      </svg>
+    </button>
+
+    {/* Dropdown List (Absolute Position) */}
+    {isDropdownOpen && (
+      <div className="absolute z-20 top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200">
+        <button
+          onClick={() => {
+            setSelectedCategory("All");
+            setIsDropdownOpen(false);
+          }}
+          className={`w-full text-left px-4 py-3 hover:bg-purple-50 transition-colors ${selectedCategory === "All" ? "bg-purple-100 text-purple-700 font-semibold" : "text-gray-600"}`}
+        >
+          All
+        </button>
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => {
+              setSelectedCategory(cat.name);
+              setIsDropdownOpen(false);
+            }}
+            className={`w-full text-left px-4 py-3 hover:bg-purple-50 transition-colors ${
+              selectedCategory === cat.name 
+                ? "bg-purple-100 text-purple-700 font-semibold" 
+                : "text-gray-600"
+            }`}
+          >
+            {cat.name}
+          </button>
+        ))}
+      </div>
+    )}
+  </div>
+
+
+  {/* DESKTOP VIEW: Horizontal Buttons (Unchanged logic, just added 'hidden md:flex') */}
+  <div className="hidden md:flex border py-5 shadow-md justify-center flex-wrap gap-4 p-3 rounded-md font-semibold bg-white">
+    <button
+      onClick={() => setSelectedCategory("All")}
+      className={`px-4 py-2 rounded-full transition-all duration-300 ${
+        selectedCategory === "All"
+          ? "bg-black text-white shadow-lg scale-105"
+          : "bg-white text-gray-500 hover:text-black hover:shadow-md border border-transparent hover:border-gray-200"
+      }`}
+    >
+      All
+    </button>
+    {categories.map((cat) => (
+      <button
+        key={cat.id}
+        onClick={() => setSelectedCategory(cat.name)}
+        className={`px-4 py-2 rounded-full transition-all duration-300 ${
+          selectedCategory === cat.name
+            ? "bg-black text-white shadow-lg scale-105"
+            : "bg-white text-gray-500 hover:text-black hover:shadow-md border border-transparent hover:border-gray-200"
+        }`}
+      >
+        {cat.name}
+      </button>
+    ))}
+  </div>
+</div>
 
         {/* Search */}
         <div className="max-w-md mx-auto mb-8">
