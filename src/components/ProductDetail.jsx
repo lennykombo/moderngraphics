@@ -173,8 +173,8 @@ Is this available?`;
     <div ref={containerRef} className="min-h-screen bg-gray-50 flex flex-col">
       <Topnav />
 
-      <main className="flex-grow mt-32 md:mt-36 px-6 max-w-7xl mx-auto w-full">
-        {/* Back button */}
+     {/* <main className="flex-grow mt-32 md:mt-36 px-6 max-w-7xl mx-auto w-full">
+        {/* Back button *//*
         <Link
           to="/"
           className="back-btn flex items-center text-purple-600 font-medium mb-8 hover:underline w-fit"
@@ -182,10 +182,10 @@ Is this available?`;
           <FaArrowLeft className="mr-2" /> Back
         </Link>
 
-        {/* ===== Product Section ===== */}
+        {/* ===== Product Section ===== *//*
         <div className="flex flex-col md:flex-row md:items-start gap-10 overflow-x-hidden">
           
-          {/* ===== Mobile View: Product Info on Top ===== */}
+          {/* ===== Mobile View: Product Info on Top ===== *//*
           <div className="block md:hidden mb-6">
             <h1 className="animate-text-item, mobile-info-item text-3xl font-semibold text-gray-900 mb-3">
               {product.name}
@@ -200,7 +200,7 @@ Is this available?`;
             <div className="space-y-4 my-6 bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
   <h3 className="font-bold text-gray-800 border-b pb-2 mb-4">Personalization Options</h3>
   
-  {/* Checkboxes */}
+  {/* Checkboxes *//*
   <div className="flex flex-col gap-3">
     <label className="flex items-center space-x-3 cursor-pointer group">
       <input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} className="w-5 h-5 accent-purple-600 rounded" />
@@ -210,10 +210,10 @@ Is this available?`;
     {/*<label className="flex items-center space-x-3 cursor-pointer group">
       <input type="checkbox" checked={engraving} onChange={(e) => setEngraving(e.target.checked)} className="w-5 h-5 accent-purple-600 rounded" />
       <span className="text-gray-700 group-hover:text-purple-600 transition">Engraving/ Branding required</span>
-    </label>*/}
+    </label>*//*
   </div>
 
-  {/* Card Selection Dropdown */}
+  {/* Card Selection Dropdown *//*
   <div className="mt-4">
     <label className="block text-sm font-medium text-gray-700 mb-1">I need a Card (Kindly specify type)</label>
     <select 
@@ -230,7 +230,7 @@ Is this available?`;
     </select>
   </div>
 
-  {/* Instructions Textarea */}
+  {/* Instructions Textarea *//*
   <div className="mt-4">
     <label className="block text-sm font-medium text-gray-700 mb-1">Special instructions / Card Message</label>
     <textarea 
@@ -253,7 +253,7 @@ Is this available?`;
                   `https://wa.me/${phoneNumber}?text=${encodedMessage}%0A${imageUrl}`,
                   "_blank"
                 );
-              }}*/
+              }}*//*
              onClick={handleOrder}
               className="bg-black hover:bg-gray-800 text-white px-8 py-3 rounded-md transition w-fit"
             >
@@ -261,9 +261,9 @@ Is this available?`;
             </button>
           </div>
 
-          {/* ===== Left: Image + Thumbnails ===== */}
+          {/* ===== Left: Image + Thumbnails ===== *//*
           <div className="product-media-section w-full md:w-1/2 flex flex-col md:flex-row items-start gap-4 overflow-hidden">
-            {/* Thumbnails (Desktop - Vertical Scroll) */}
+            {/* Thumbnails (Desktop - Vertical Scroll) *//*
             <div className="hidden md:flex flex-col gap-3 overflow-y-auto max-h-96 pr-1 flex-shrink-0">
               {product.gallery?.map((media, index) => (
                 <div
@@ -278,33 +278,49 @@ Is this available?`;
                   {media.includes(".mp4") ? (
                     <video src={media} className="w-full h-full object-cover" muted />
                   ) : (
-                    <img src={media} alt="thumb" className="w-full h-full object-cover" />
+                    <img src={media} alt="thumb" className="w-full h-full object-cover" 
+                    onContextMenu={(e) => e.preventDefault()} // Disables Right-Click
+                    onDragStart={(e) => e.preventDefault()} />
                   )}
                 </div>
               ))}
             </div>
 
-            {/* Main Image */}
-            <div className="flex-1 h-96 rounded-lg shadow-sm overflow-hidden flex items-center justify-center bg-white">
-              {/* Added 'main-media-display' class for animation */}
-              <div className="main-media-display w-full h-full flex items-center justify-center"> 
-                {selectedMedia.includes(".mp4") ? (
-                  <video
-                    src={selectedMedia}
-                    controls
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <img
-                    src={selectedMedia}
-                    alt={product.name}
-                    className="w-full h-full object-contain"
-                  />
-                )}
-              </div>
-            </div>
+            {/* Main Image *//*
+           
+<div className="flex-1 h-96 rounded-lg shadow-sm overflow-hidden flex items-center justify-center bg-white relative">
+  {/* The 'main-media-display' class is kept here for GSAP animations *//*
+  <div className="main-media-display w-full h-full flex items-center justify-center relative"> 
+    {selectedMedia.includes(".mp4") ? (
+      /* Videos remain unprotected so users can click 'Play/Pause' *//*
+      <video
+        src={selectedMedia}
+        controls
+        className="w-full h-full object-contain"
+      />
+    ) : (
+      /* Protected Image Wrapper *//*
+      <div className="relative w-full h-full flex items-center justify-center">
+        <img
+          src={selectedMedia}
+          alt={product.name}
+          // pointer-events-none: browser ignores clicks on the image
+          // select-none: stops the "ghost" image from appearing when trying to highlight
+          className="w-full h-full object-contain pointer-events-none select-none"
+        />
 
-            {/* Thumbnails (Mobile - Horizontal Scroll) */}
+        {/* THE SHIELD: This invisible layer catches the right-click and drag *//*
+        <div 
+          className="absolute inset-0 z-10 bg-transparent"
+          onContextMenu={(e) => e.preventDefault()} // Blocks "Save Image As..."
+          onDragStart={(e) => e.preventDefault()}   // Blocks dragging to desktop
+        />
+      </div>
+    )}
+  </div>
+</div>
+
+            {/* Thumbnails (Mobile - Horizontal Scroll) *//*
             <div className="flex md:hidden gap-3 mt-4 overflow-x-auto flex-nowrap pb-2 w-full scroll-smooth no-scrollbar">
               {product.gallery?.map((media, index) => (
                 <div
@@ -317,16 +333,19 @@ Is this available?`;
                   {media.includes(".mp4") ? (
                     <video src={media} className="w-full h-full object-cover" muted />
                   ) : (
-                    <img src={media} alt="thumb" className="w-full h-full object-cover" />
+                    <img src={media} alt="thumb" className="w-full h-full object-cover" 
+                    onContextMenu={(e) => e.preventDefault()} // Disables Right-Click
+                    onDragStart={(e) => e.preventDefault()} 
+                    />
                   )}
                 </div>
               ))}
-            </div>
+             </div>
           </div>
 
-          {/* ===== Right: Product Info (Desktop only) ===== */}
+          {/* ===== Right: Product Info (Desktop only) ===== *//*
           <div className="hidden md:flex flex-col w-full md:w-1/2">
-            {/* Added 'desktop-info-item' class for stagger animation */}
+            {/* Added 'desktop-info-item' class for stagger animation *//*
             <h1 className="animate-text-item, desktop-info-item text-4xl font-semibold text-gray-900 mb-3">
               {product.name}
             </h1>
@@ -340,7 +359,7 @@ Is this available?`;
             <div className="space-y-4 my-6 bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
   <h3 className="font-bold text-gray-800 border-b pb-2 mb-4">Personalization Options</h3>
   
-  {/* Checkboxes */}
+  {/* Checkboxes *//*
   <div className="flex flex-col gap-3">
     <label className="flex items-center space-x-3 cursor-pointer group">
       <input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} className="w-5 h-5 accent-purple-600 rounded" />
@@ -350,10 +369,10 @@ Is this available?`;
     {/*<label className="flex items-center space-x-3 cursor-pointer group">
       <input type="checkbox" checked={engraving} onChange={(e) => setEngraving(e.target.checked)} className="w-5 h-5 accent-purple-600 rounded" />
       <span className="text-gray-700 group-hover:text-purple-600 transition">Engraving/ Branding required</span>
-    </label>*/}
+    </label>*//*
   </div>
 
-  {/* Card Selection Dropdown */}
+  {/* Card Selection Dropdown *//*
   <div className="mt-4">
     <label className="block text-sm font-medium text-gray-700 mb-1">I need a Card (Kindly specify type)</label>
     <select 
@@ -370,7 +389,7 @@ Is this available?`;
     </select>
   </div>
 
-  {/* Instructions Textarea */}
+  {/* Instructions Textarea *//*
   <div className="mt-4">
     <label className="block text-sm font-medium text-gray-700 mb-1">Special instructions / Card Message</label>
     <textarea 
@@ -393,7 +412,7 @@ Is this available?`;
                   `https://wa.me/${phoneNumber}?text=${encodedMessage}%0A${imageUrl}`,
                   "_blank"
                 );
-              }}*/
+              }}*//*
              onClick={handleOrder}
               className="bg-purple-500 hover:bg-gray-800 text-white px-10 py-3 rounded-md transition w-fit shadow-md hover:shadow-lg"
             >
@@ -402,7 +421,7 @@ Is this available?`;
           </div>
         </div>
 
-        {/* ===== Related Products ===== */}
+        {/* ===== Related Products ===== *//*
         <div className="mt-16 mb-20">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">
             Related Products
@@ -420,6 +439,8 @@ Is this available?`;
                     src={item.images?.[0] || "default-placeholder.jpg"}
                     alt={item.name}
                     className="w-full h-48 object-cover rounded-md mb-2"
+                    onContextMenu={(e) => e.preventDefault()} // Disables Right-Click
+                    onDragStart={(e) => e.preventDefault()} 
                   />
                   <p className="font-medium text-gray-800 truncate">{item.name}</p>
                   <p className="text-purple-600 font-semibold text-sm">
@@ -432,7 +453,191 @@ Is this available?`;
             )}
           </div>
         </div>
-      </main>
+      </main>*/}
+
+      <main className="flex-grow mt-32 md:mt-36 px-6 max-w-7xl mx-auto w-full">
+  {/* Back button */}
+  <Link
+    to="/"
+    className="back-btn flex items-center text-purple-600 font-medium mb-8 hover:underline w-fit"
+  >
+    <FaArrowLeft className="mr-2" /> Back
+  </Link>
+
+  {/* Outer Wrapper: Column on mobile, Row on desktop */}
+  <div className="flex flex-col md:flex-row md:items-start gap-10 overflow-x-hidden">
+    
+    {/* --- COLUMN 1: (TOP on Mobile, LEFT on Desktop) --- */}
+    <div className="w-full md:w-1/2">
+      
+      {/* A. MOBILE-ONLY HEADER: Name and Price at the very top */}
+      <div className="md:hidden mb-6">
+        <h1 className="animate-text-item text-3xl font-semibold text-gray-900 mb-2">
+          {product.name}
+        </h1>
+        <p className="animate-text-item text-xl text-purple-600 font-bold mb-3">
+          Ksh {product.price.toLocaleString()}
+        </p>
+        <p className="animate-text-item text-gray-700 leading-relaxed">
+          {product.description}
+        </p>
+      </div>
+
+      {/* B. MEDIA SECTION: This now falls under the price on mobile */}
+      <div className="product-media-section w-full flex flex-col md:flex-row items-start gap-4">
+        {/* Desktop Thumbnails (Vertical) */}
+        <div className="hidden md:flex flex-col gap-3 overflow-y-auto max-h-96 pr-1 flex-shrink-0">
+          {product.gallery?.map((media, index) => (
+            <div
+              key={index}
+              onClick={() => setSelectedMedia(media)}
+              className={`w-20 h-20 border-2 rounded-md cursor-pointer overflow-hidden transition relative ${
+                selectedMedia === media ? "border-purple-500 scale-105" : "border-gray-300"
+              }`}
+            >
+              {media.includes(".mp4") ? (
+                <video src={media} className="w-full h-full object-cover" muted />
+              ) : (
+                <img src={media} className="w-full h-full object-cover pointer-events-none" 
+                onContextMenu={e => e.preventDefault()}
+                onDragStart={(e) => e.preventDefault()} />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Main Image */}
+        <div className="flex-1 h-80 md:h-96 rounded-lg shadow-sm overflow-hidden flex items-center justify-center bg-white relative w-full">
+          <div className="main-media-display w-full h-full flex items-center justify-center relative"> 
+            {selectedMedia.includes(".mp4") ? (
+              <video src={selectedMedia} controls className="w-full h-full object-contain" />
+            ) : (
+              <div className="relative w-full h-full flex items-center justify-center">
+                <img
+                  src={selectedMedia}
+                  alt={product.name}
+                  className="w-full h-full object-contain pointer-events-none select-none"
+                />
+                <div 
+                  className="absolute inset-0 z-10 bg-transparent"
+                  onContextMenu={(e) => e.preventDefault()}
+                  onDragStart={(e) => e.preventDefault()}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Mobile Thumbnails (Horizontal) */}
+        <div className="flex md:hidden gap-3 mt-4 overflow-x-auto flex-nowrap pb-2 w-full scroll-smooth no-scrollbar">
+          {product.gallery?.map((media, index) => (
+            <div
+              key={index}
+              onClick={() => setSelectedMedia(media)}
+              className={`flex-shrink-0 w-20 h-20 border-2 rounded-md cursor-pointer overflow-hidden relative ${
+                selectedMedia === media ? "border-purple-500" : "border-gray-300"
+              }`}
+            >
+              {media.includes(".mp4") ? (
+                <video src={media} className="w-full h-full object-cover" muted />
+              ) : (
+                <img 
+                  src={media} 
+                  className="w-full h-full object-cover pointer-events-none" 
+                  onContextMenu={e => e.preventDefault()}
+                   onDragStart={(e) => e.preventDefault()} 
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* --- COLUMN 2: (BOTTOM on Mobile, RIGHT on Desktop) --- */}
+    <div className="w-full md:w-1/2">
+      
+      {/* C. DESKTOP-ONLY HEADER: Only shows on big screens */}
+      <div className="hidden md:block">
+        <h1 className="animate-text-item text-4xl font-semibold text-gray-900 mb-3">
+          {product.name}
+        </h1>
+        <p className="animate-text-item text-2xl text-purple-600 font-semibold mb-4">
+          Ksh {product.price.toLocaleString()}
+        </p>
+        <p className="animate-text-item text-gray-700 mb-6 leading-relaxed">
+          {product.description}
+        </p>
+      </div>
+
+      {/* D. PERSONALIZATION OPTIONS: Follows the image on mobile */}
+      <div className="space-y-4 my-6 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
+        <h3 className="font-bold text-gray-800 border-b pb-2 mb-4">Personalization Options</h3>
+        
+        <div className="flex flex-col gap-3">
+          <label className="flex items-center space-x-3 cursor-pointer group">
+            <input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} className="w-5 h-5 accent-purple-600 rounded" />
+            <span className="text-gray-700">Gift Wrapping Required</span>
+          </label>
+        </div>
+
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">I need a Card (Kindly specify type)</label>
+          <select 
+            value={cardType} 
+            onChange={(e) => setCardType(e.target.value)}
+            className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-purple-200"
+          >
+            <option value="">No Card needed</option>
+            <option value="Birthday">Birthday</option>
+            <option value="Love/Romantic">Love/Romantic</option>
+            <option value="Anniversary">Anniversary</option>
+            <option value="Congratulations">Congratulations</option>
+            <option value="Other">Other (Specify below)</option>
+          </select>
+        </div>
+
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Special instructions / Card Message</label>
+          <textarea 
+            rows="3"
+            placeholder="Enter details here..."
+            value={specialInstructions}
+            onChange={(e) => setSpecialInstructions(e.target.value)}
+            className="w-full border border-gray-300 rounded-md p-2 outline-none resize-none focus:ring-2 focus:ring-purple-200"
+          ></textarea>
+        </div>
+      </div>
+
+      {/* E. ORDER BUTTON */}
+      <button
+        onClick={handleOrder}
+        className="bg-purple-500 hover:bg-black text-white px-10 py-4 rounded-md transition-all w-full md:w-fit font-bold shadow-md"
+      >
+        Order Now
+      </button>
+    </div>
+  </div>
+
+  {/* ===== Related Products Section stays here at the bottom ===== */}
+  <div className="mt-16 mb-20">
+    <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Products</h2>
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+      {relatedProducts.map((item) => (
+        <Link key={item.id} to={`/product/${item.id}`} className="related-card opacity-0 hover:shadow-lg transition-all rounded-lg p-2 bg-white block">
+          <div className="relative overflow-hidden mb-2 rounded-md">
+            <img src={item.images?.[0]} alt={item.name} className="w-full h-48 object-cover pointer-events-none" onContextMenu={e => e.preventDefault()}
+             onDragStart={(e) => e.preventDefault()} />
+            <div className="absolute inset-0 z-10" onContextMenu={e => e.preventDefault()}
+             onDragStart={(e) => e.preventDefault()} />
+          </div>
+          <p className="font-medium text-gray-800 truncate">{item.name}</p>
+          <p className="text-purple-600 font-semibold text-sm">Ksh {item.price.toLocaleString()}</p>
+        </Link>
+      ))}
+    </div>
+  </div>
+</main>
 
       <Footer/>
     </div>
