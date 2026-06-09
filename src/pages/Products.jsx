@@ -68,9 +68,9 @@ useEffect(() => {
   fetchProducts();
 }, []);
 
-const handleEditProduct = (product) => {
+/*const handleEditProduct = (product) => {
   setEditProduct(product);
-};
+};*/
 
 /*const handleUpdateProduct = async () => {
   if (!editProduct) return;
@@ -141,6 +141,12 @@ const uploadVideoToCloudinary = async (file) => {
     console.error("Error updating product:", error);
   }
 };*/
+
+const handleEditProduct = (product) => {
+  console.log("EDIT PRODUCT:", product);
+  setEditProduct(product);
+};
+
 const handleUpdateProduct = async () => {
   if (!editProduct || !editProduct.id) {
     console.error("Product ID or editProduct is missing!");
@@ -206,7 +212,9 @@ const handleUpdateProduct = async () => {
       price: editProduct.price,
       category: editProduct.category,
       description: editProduct.description,
-      image: imageUrl,
+      description: editProduct.description,
+      images: editProduct.images,
+      //image: imageUrl,
       video: videoUrl,
     });
 
@@ -614,6 +622,20 @@ const handleDeleteProduct = async (productId) => {
              </select>
              </div>
 
+             <div className="mb-4">
+  <label className="block text-gray-700">Description</label>
+  <textarea
+    className="w-full p-2 border rounded"
+    value={editProduct.description || ""}
+    onChange={(e) =>
+      setEditProduct((prev) => ({
+        ...prev,
+        description: e.target.value,
+      }))
+    }
+    rows={4}
+  />
+</div>
             <div className="mb-4">
               <label className="block text-gray-700">Product Images</label>
               <div className="flex flex-wrap gap-2">
