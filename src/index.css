@@ -69,14 +69,10 @@
   animation: shimmer 2s infinite linear;
 }
 
-@keyframes shimmer-text {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }
-.animate-text-shimmer {
-  background: linear-gradient(90deg, #6b21a8, #a855f7, #6b21a8);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer-text 2s linear infinite;
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }

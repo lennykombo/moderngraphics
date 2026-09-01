@@ -193,70 +193,44 @@ const EcommerceUI = () => {
     <div ref={containerRef} className="flex flex-col min-h-screen">
       <Topnav />
 
-{/* HERO SECTION -  STYLE SLIM BANNER */}
-<section className="relative w-full h-[300px] md:h-[450px] overflow-hidden mt-16 bg-white">
+{/* HERO SECTION - INSCRIBE STYLE */}
+
+{/* HERO SECTION */}
+<section className="relative w-full mt-16 bg-white left-0 right-0">
   
-  {/* 1. LOGO PRELOADER (Visible only while imagesLoaded is false) */}
+  {/* 1. LOADING LOGO (Matches Banner Shape) */}
   {!imagesLoaded && (
-    <div className="absolute inset-0 z-20 flex items-center justify-center bg-gray-50">
-      <div className="flex flex-col items-center">
-        {/* Replace /logo.png with your actual logo path */}
-        <img 
-          src={logo} 
-          alt="Loading..." 
-          className="w-20 h-20 md:w-32 md:h-32 object-contain animate-pulse"
-        />
-        <div className="mt-4 flex gap-1">
-          <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></span>
-          <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-          <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-        </div>
-        <p className="text-gray-400 text-xs md:text-sm uppercase tracking-[0.3em] font-light animate-pulse mt-4">
-    Loading <span className="text-purple-600 font-bold">Modern Tech Graphics</span>
-  </p>
-      </div>
+    <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white aspect-[16/7] md:aspect-[25/9]">
+        <img src={logo} alt="Loading..." className="w-20 md:w-32 object-contain animate-pulse mb-4" />
+
+        <div className="flex flex-col items-center gap-2">
+            <div className="flex gap-1.5">
+               <span className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+               <span className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+               <span className="w-1.5 h-1.5 bg-purple-600 rounded-full animate-bounce"></span>
+            </div>
+            <p className="text-[10px] md:text-xs tracking-[0.4em] text-gray-400 uppercase font-bold">
+              Loading <span className="text-purple-600">Modern Graphics</span>
+            </p>
+          </div>
     </div>
   )}
 
-  {/* 2. BANNER IMAGES */}
-  <div className={`hero-image absolute inset-0 w-full h-full transition-opacity duration-1000 ${imagesLoaded ? "opacity-100" : "opacity-0"}`}>
+  {/* 2. THE BANNER - FULL WIDTH & PROPORTIONAL */}
+  {/* 'aspect-[16/7]' is the secret for mobile. It keeps it wide so you see the whole image. */}
+  <div className="relative w-full aspect-[16/7] md:aspect-[25/9] overflow-hidden bg-gray-50">
     {bannerImages.length > 0 && bannerImages.map((src, i) => (
       <img
         key={i}
         src={src}
         alt={`banner-${i}`}
-        // Trigger imagesLoaded when the FIRST image finishes downloading
         onLoad={() => { if(i === 0) setImagesLoaded(true); }}
-        className={`absolute inset-0 w-full h-full object-fit transition-opacity duration-1000 ${
+        className={`absolute inset-0 w-full h-full object-contain md:object-cover transition-opacity duration-1000 ${
           i === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
         }`}
       />
     ))}
-    
-    {/* Soft Overlay */}
-    <div className="absolute inset-0 bg-black/20 z-[11]" />
   </div>
-
-  {/* 3. TEXT CONTENT OVERLAY (Only shows when images are ready) */}
-  {/*<div className={`relative z-30 h-full flex items-center px-6 md:px-16 lg:px-24 transition-transform duration-1000 ${imagesLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
-    <div className="max-w-2xl">
-      <h1 className="text-2xl md:text-5xl font-bold mb-3 text-white drop-shadow-lg flex items-center min-h-[40px] md:min-h-[60px]">
-        <span className="typing-target"></span>
-        <span className="cursor bg-white ml-1 w-[2px] h-[24px] md:h-[45px] inline-block"></span>
-      </h1>
-
-      <p className="hero-text-element text-white text-sm md:text-lg mb-6 max-w-md drop-shadow-md font-medium">
-        Crafted to celebrate life’s moments with a touch of elegance.
-      </p>
-      
-      <button
-        onClick={() => document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" })}
-        className="hero-text-element bg-purple-600 text-white px-6 py-2.5 md:px-8 md:py-3 rounded-full font-semibold hover:bg-black transition-all shadow-lg text-sm md:text-base"
-      >
-        Shop Now
-      </button>
-    </div>
-  </div>*/}
 </section>
 
       {/* PRODUCTS SECTION */}
