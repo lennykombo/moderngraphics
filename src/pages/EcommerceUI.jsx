@@ -4,6 +4,7 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import Productcard from "../components/Productcard";
 import Topnav from "../components/Topnav";
 import Footer from "../components/Footer";
+import logo from "../assets/mgtlogo2.png"
 
 // GSAP Imports
 import gsap from "gsap";
@@ -22,6 +23,7 @@ const EcommerceUI = () => {
   const [bannerImages, setBannerImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false); 
 
   const containerRef = useRef();
 
@@ -117,14 +119,16 @@ const EcommerceUI = () => {
   }, { scope: containerRef });*/
 
 
-  // 1. HERO ANIMATION (Typing + Fade Up)
+  // 1. HERO ANIMATION (Starts only when imagesLoaded is true)
   useGSAP(() => {
+    if (!imagesLoaded) return; // Wait for the logo-preloader to finish
+
     const tl = gsap.timeline();
 
-    // A. Subtle Image Zoom/Fade
+    // A. Fade in the background container smoothly
     tl.fromTo(".hero-image", 
-      { opacity: 0, scale: 1.05 }, 
-      { opacity: 1, scale: 1, duration: 1.5, ease: "power2.out" }
+      { scale: 1.1 }, 
+      { scale: 1, duration: 2, ease: "power2.out" }
     )
     
     // B. Typewriter Effect
@@ -132,9 +136,9 @@ const EcommerceUI = () => {
       text: "Timeless Personalized Gifts",
       duration: 1.5,
       ease: "none",
-    }, "-=0.8")
+    }, "-=1.5") // Start typing while the scale is happening
     
-    // C. Content Fade Up
+    // C. Text & Button Fade Up
     .fromTo(".hero-text-element", 
       { y: 20, opacity: 0 }, 
       { 
@@ -147,10 +151,9 @@ const EcommerceUI = () => {
       "-=0.5"
     );
 
-    // Cursor Blink
     gsap.to(".cursor", { opacity: 0, repeat: -1, yoyo: true, duration: 0.5 });
 
-  }, { scope: containerRef });
+  }, { dependencies: [imagesLoaded], scope: containerRef }); // IMPORTANT: Added imagesLoaded as a dependency
 
   // 2. PRODUCT GRID ANIMATION (ScrollTrigger Batch)
   useGSAP(() => {
@@ -190,83 +193,53 @@ const EcommerceUI = () => {
     <div ref={containerRef} className="flex flex-col min-h-screen">
       <Topnav />
 
-      {/* HERO SECTION */}
-      {/*<section className="flex flex-col-reverse md:flex-row items-center justify-between mt-20 px-8 md:px-16 py-12">
-        <div className="w-full md:w-1/2 mt-8 md:mt-0">
-          
-          {/* H1: Typing Animation Target */}
-          {/* Added 'min-h' to prevent layout jump before text types in *//*
-          <h1 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900 min-h-[48px] md:min-h-[60px] flex items-center py-5">
-            <span className="typing-target"></span>
-            <span className="cursor text-black ml-1"></span>
-          </h1>
-
-          <p className="hero-text-element text-gray-600 mb-6 text-lg">
-            Crafted to celebrate life’s moments with a touch of elegance.
-          </p>
-          <button
-            onClick={() => document.getElementById("products-section")?.scrollIntoView({ behavior: "smooth" })}
-            className="hero-text-element bg-purple-500 text-white px-6 py-2 rounded-md hover:bg-gray-800 transition"
-          >
-            Shop Now
-          </button>
-        </div>
-
-     
-        {/* Hero Image *//*
-
-<div className="hero-image w-full md:w-3/4 relative h-72 md:h-96 overflow-hidden rounded-lg shadow-md bg-white">
-  {bannerImages.length > 0 ? (
-    bannerImages.map((src, i) => (
-      <img
-  key={i}
-  src={src}
-  alt={`banner-${i}`}
-  // CHANGED: 'object-fill' forces the image to stretch to the exact box size
-  className={`absolute inset-0 w-full h-full object-fill transition-opacity duration-1000 ${
-    i === currentIndex ? "opacity-100 active-banner-img" : "opacity-0"
-  }`}
-/>
-    ))
-  ) : (
-     <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-       Loading...
-     </div>
-  )}
-</div>
-      </section>*/}
-
-
 {/* HERO SECTION -  STYLE SLIM BANNER */}
-<section className="relative w-full h-[300px] md:h-[450px] overflow-hidden mt-16">
+<section className="relative w-full h-[300px] md:h-[450px] overflow-hidden mt-16 bg-white">
   
-  {/* Banner Images Background */}
-  <div className="hero-image absolute inset-0 w-full h-full">
-    {bannerImages.length > 0 ? (
-      bannerImages.map((src, i) => (
-        <img
-          key={i}
-          src={src}
-          alt={`banner-${i}`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            i === currentIndex ? "opacity-100 active-banner-img" : "opacity-0"
-          }`}
+  {/* 1. LOGO PRELOADER (Visible only while imagesLoaded is false) */}
+  {!imagesLoaded && (
+    <div className="absolute inset-0 z-20 flex items-center justify-center bg-gray-50">
+      <div className="flex flex-col items-center">
+        {/* Replace /logo.png with your actual logo path */}
+        <img 
+          src={logo} 
+          alt="Loading..." 
+          className="w-20 h-20 md:w-32 md:h-32 object-contain animate-pulse"
         />
-      ))
-    ) : (
-      <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
-        Loading...
+        <div className="mt-4 flex gap-1">
+          <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce"></span>
+          <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+          <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+        </div>
+        <p className="text-gray-400 text-xs md:text-sm uppercase tracking-[0.3em] font-light animate-pulse mt-4">
+    Loading <span className="text-purple-600 font-bold">Modern Tech Graphics</span>
+  </p>
       </div>
-    )}
+    </div>
+  )}
+
+  {/* 2. BANNER IMAGES */}
+  <div className={`hero-image absolute inset-0 w-full h-full transition-opacity duration-1000 ${imagesLoaded ? "opacity-100" : "opacity-0"}`}>
+    {bannerImages.length > 0 && bannerImages.map((src, i) => (
+      <img
+        key={i}
+        src={src}
+        alt={`banner-${i}`}
+        // Trigger imagesLoaded when the FIRST image finishes downloading
+        onLoad={() => { if(i === 0) setImagesLoaded(true); }}
+        className={`absolute inset-0 w-full h-full object-fit transition-opacity duration-1000 ${
+          i === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+        }`}
+      />
+    ))}
     
-    {/* Soft Overlay (helps white text pop without hiding the image) */}
-    <div className="absolute inset-0 bg-black/20" />
+    {/* Soft Overlay */}
+    <div className="absolute inset-0 bg-black/20 z-[11]" />
   </div>
 
-  {/* Text Content Overlay */}
-  {/*<div className="relative z-10 h-full flex items-center px-6 md:px-16 lg:px-24">
+  {/* 3. TEXT CONTENT OVERLAY (Only shows when images are ready) */}
+  {/*<div className={`relative z-30 h-full flex items-center px-6 md:px-16 lg:px-24 transition-transform duration-1000 ${imagesLoaded ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}>
     <div className="max-w-2xl">
-      {/* H1 with Typing Animation *//*
       <h1 className="text-2xl md:text-5xl font-bold mb-3 text-white drop-shadow-lg flex items-center min-h-[40px] md:min-h-[60px]">
         <span className="typing-target"></span>
         <span className="cursor bg-white ml-1 w-[2px] h-[24px] md:h-[45px] inline-block"></span>
@@ -285,7 +258,7 @@ const EcommerceUI = () => {
     </div>
   </div>*/}
 </section>
- 
+
       {/* PRODUCTS SECTION */}
 <section id="products-section" className="w-full px-6 md:px-16 py-12">
   <h2 className="text-2xl font-bold text-center md:text-left mb-8">Our Products</h2>
