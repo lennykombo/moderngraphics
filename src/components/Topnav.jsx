@@ -33,7 +33,7 @@ const Topnav = () => {
               key={item}
               href={item === 'Shop' ? "#products-section" : "#"}
               onClick={item === 'Shop' ? handleScrollToProducts : undefined}
-              className="text-[10px] font-bold text-zinc-500 hover:text-black transition-all duration-300 relative group"
+              className="text-[16px] font-bold text-zinc-500 hover:text-black transition-all duration-300 relative group"
             >
               {item}
               <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-black transition-all group-hover:w-full"></span>
