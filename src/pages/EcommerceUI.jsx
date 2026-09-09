@@ -23,7 +23,9 @@ const EcommerceUI = () => {
   const [bannerImages, setBannerImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [imagesLoaded, setImagesLoaded] = useState(false); 
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [showEmptyState, setShowEmptyState] = useState(false);
 
   const containerRef = useRef();
 
@@ -36,13 +38,27 @@ const EcommerceUI = () => {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchProducts = async () => {
       const querySnapshot = await getDocs(collection(db, "products"));
       setProducts(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     };
     fetchProducts();
-  }, []);
+  }, []);*/
+
+  useEffect(() => {
+  const fetchProducts = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "products"));
+      setProducts(querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+  fetchProducts();
+}, []);
+
+
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -75,49 +91,22 @@ const EcommerceUI = () => {
     );
   }, [products, selectedCategory, searchTerm]);
 
+
+  useEffect(() => {
+  if (productsLoading) {
+    setShowEmptyState(false);
+    return;
+  }
+
+  if (filteredProducts.length === 0) {
+    const timer = setTimeout(() => setShowEmptyState(true), 5000);
+    return () => clearTimeout(timer);
+  } else {
+    setShowEmptyState(false);
+  }
+}, [productsLoading, filteredProducts]);
+
   // --- GSAP ANIMATIONS ---
-
-
-  // 1. HERO ANIMATION (Typing + Fade Up)
-  /*useGSAP(() => {
-    const tl = gsap.timeline();
-
-    // A. Typewriter Effect
-    tl.to(".typing-target", {
-      text: "Timeless Personalized Gifts",
-      duration: 1.5,
-      ease: "none",
-    })
-    
-    // B. Fade in Paragraph & Button
-    // CHANGED: Use .fromTo() instead of .from()
-    // This forces the animation to explicitly animate TO opacity 1, preventing it from getting stuck.
-    .fromTo(".hero-text-element", 
-      { y: 20, opacity: 0 }, // Start state
-      { 
-        y: 0, 
-        opacity: 1, 
-        duration: 0.8, 
-        stagger: 0.2, 
-        ease: "power3.out" 
-      }, 
-      "-=0.5" // Overlap with typing
-    )
-    
-    // C. Fade in Hero Image
-    .fromTo(".hero-image", 
-      { x: 50, opacity: 0 }, 
-      { 
-        x: 0, 
-        opacity: 1, 
-        duration: 1, 
-        ease: "power2.out" 
-      }, 
-      "<" // Start at same time as text fade
-    );
-
-  }, { scope: containerRef });*/
-
 
   // 1. HERO ANIMATION (Starts only when imagesLoaded is true)
   useGSAP(() => {
@@ -180,20 +169,11 @@ const EcommerceUI = () => {
     ScrollTrigger.refresh();
   }, { dependencies: [filteredProducts], scope: containerRef });
 
-  // 3. BANNER ZOOM ANIMATION
-  /*useGSAP(() => {
-    gsap.fromTo(".active-banner-img",
-      { scale: 1.1, opacity: 0.8 },
-      { scale: 1, opacity: 1, duration: 4, ease: "power1.out" }
-    );
-  }, { dependencies: [currentIndex], scope: containerRef });*/
 
 
   return (
     <div ref={containerRef} className="flex flex-col min-h-screen">
       <Topnav />
-
-{/* HERO SECTION - INSCRIBE STYLE */}
 
 {/* HERO SECTION */}
 <section className="relative w-full mt-16 bg-white left-0 right-0">
@@ -330,7 +310,7 @@ const EcommerceUI = () => {
       </div>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+      {/*<div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
         {filteredProducts.map(product => (
           <div key={product.id} 
           className="product-card opacity-0 h-full"
@@ -340,12 +320,37 @@ const EcommerceUI = () => {
         ))}
       </div>
 
-      {/* No Products Found State */}
+      {/* No Products Found State *//*
       {filteredProducts.length === 0 && (
         <div className="text-center py-20 text-gray-500">
           No products found in this category.
         </div>
-      )}
+      )*/}
+           {productsLoading && (
+  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+    {Array.from({ length: 8 }).map((_, i) => (
+      <div key={i} className="aspect-square bg-gray-200 rounded-xl animate-pulse" />
+    ))}
+  </div>
+)}
+
+{!productsLoading && filteredProducts.length > 0 && (
+  <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+    {filteredProducts.map(product => (
+      <div key={product.id}
+        className="product-card opacity-0 h-full"
+        onContextMenu={(e) => e.preventDefault()}>
+        <Productcard product={{ ...product, image: product.images?.[0] }} />
+      </div>
+    ))}
+  </div>
+)}
+
+{!productsLoading && filteredProducts.length === 0 && showEmptyState && (
+  <div className="text-center py-20 text-gray-500">
+    No products found in this category.
+  </div>
+)}
     </div>
 
   </div>

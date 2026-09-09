@@ -22,7 +22,7 @@ const Topnav = () => {
           <span className="text-black font-black text-sm md:text-xl tracking-tighter italic">
             {/* On mobile we show MTG, on desktop we show the full name */}
             <span className="block md:hidden">MTG<span className="text-red-600">_</span></span>
-            <span className="hidden md:block">MODERNTECHGRAPHICS<span className="text-red-600">_</span></span>
+            <span className="hidden md:block">Modern Tech<span className="text-purple-600 ml-2">Graphics_</span></span>
           </span>
         </Link>
 

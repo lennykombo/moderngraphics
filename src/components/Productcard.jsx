@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
+import { slugify } from "../utils/slugify";
 
 const Productcard = ({ product }) => {
   const navigate = useNavigate();
@@ -8,15 +9,16 @@ const Productcard = ({ product }) => {
     <div
       // Fixed typo: 'grou' to 'group'
       className="flex flex-col cursor-pointer group hover:shadow-lg hover:p-2 rounded-lg transition-all duration-300"
-      onClick={() => navigate(`/product/${product.id}`)}
+      //onClick={() => navigate(`/product/${product.id}`)}
+      onClick={() => navigate(`/product/${slugify(product.name)}-${product.id}`)}
     >
       {/* Image Container */}
       <div className="w-full aspect-square overflow-hidden rounded-xl bg-gray-100 relative">
         <img
           src={product.image}
           alt={product.name}
-          // ADDED: pointer-events-none (stops direct interaction)
-          // ADDED: select-none (prevents highlighting)
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 pointer-events-none select-none"
         />
 

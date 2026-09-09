@@ -68,32 +68,6 @@ useEffect(() => {
   fetchProducts();
 }, []);
 
-/*const handleEditProduct = (product) => {
-  setEditProduct(product);
-};*/
-
-/*const handleUpdateProduct = async () => {
-  if (!editProduct) return;
-
-  try {
-    await updateDoc(doc(db, "products", editProduct.id), {
-      name: editProduct.name,
-      price: parseFloat(editProduct.price),
-      category: editProduct.category,
-      description: editProduct.description,
-      images: editProduct.images,
-      video: editProduct.video,
-    });
-
-    setProducts((prev) =>
-      prev.map((p) => (p.id === editProduct.id ? editProduct : p))
-    );
-
-    setEditProduct(null);
-  } catch (error) {
-    console.error("Error updating product:", error);
-  }
-};*/
 
 //works on the update
 const uploadVideoToCloudinary = async (file) => {
@@ -114,33 +88,7 @@ const uploadVideoToCloudinary = async (file) => {
   }
 };
 
-/*const handleUpdateProduct = async () => {
-  if (!editProduct) return;
 
-  let videoUrl = editProduct.video;
-  if (video && typeof video !== "string") {
-    videoUrl = await uploadVideoToCloudinary(video);
-  }
-
-  try {
-    await updateDoc(doc(db, "products", editProduct.id), {
-      name: editProduct.name,
-      price: parseFloat(editProduct.price),
-      category: editProduct.category,
-      description: editProduct.description,
-      images: editProduct.images,
-      video: videoUrl,
-    });
-
-    setProducts((prev) =>
-      prev.map((p) => (p.id === editProduct.id ? { ...editProduct, video: videoUrl } : p))
-    );
-
-    setEditProduct(null);
-  } catch (error) {
-    console.error("Error updating product:", error);
-  }
-};*/
 
 const handleEditProduct = (product) => {
   console.log("EDIT PRODUCT:", product);
@@ -212,7 +160,6 @@ const handleUpdateProduct = async () => {
       price: editProduct.price,
       category: editProduct.category,
       description: editProduct.description,
-      description: editProduct.description,
       images: editProduct.images,
       //image: imageUrl,
       video: videoUrl,
@@ -226,12 +173,6 @@ const handleUpdateProduct = async () => {
 };
 
 
-/*const handleVideoChange = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    setEditProduct((prev) => ({ ...prev, video: URL.createObjectURL(file) }));
-  }
-};*/
 const handleVideoChange = (event) => {
   const file = event.target.files[0];
   if (file) {
@@ -337,7 +278,8 @@ const handleAddProduct = async () => {
 
   try {
     await addDoc(collection(db, "products"), newProduct); // Store in Firestore
-    setProducts([...products, newProduct]); // Update UI
+    //setProducts([...products, newProduct]); // Update UI
+    setProducts([...products, { id: docRef.id, ...newProduct }]);
     setShowForm(false); // Hide form
     setProductName("");
     setProductImages([]);

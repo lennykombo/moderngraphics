@@ -14,7 +14,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const ProductDetail = () => {
+
   const { id } = useParams();
+  const { slug } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,7 +32,7 @@ const [specialInstructions, setSpecialInstructions] = useState("");
   const containerRef = useRef();
 
   // --- DATA FETCHING ---
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
       try {
@@ -56,7 +58,40 @@ const [specialInstructions, setSpecialInstructions] = useState("");
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id]);*/
+
+
+  useEffect(() => {
+  const fetchProduct = async () => {
+    setLoading(true);
+    try {
+      // Extract the real Firestore ID from the end of the slug
+      // e.g. "silver-necklace-a1B2c3D4" -> "a1B2c3D4"
+      const id = slug.substring(slug.lastIndexOf("-") + 1);
+
+      const productRef = doc(db, "products", id);
+      const productSnap = await getDoc(productRef);
+
+      if (productSnap.exists()) {
+        const productData = productSnap.data();
+        const gallery = [...(productData.images || [])];
+        if (productData.video) gallery.push(productData.video);
+
+        setProduct({ ...productData, gallery });
+        setSelectedMedia(gallery[0] || "");
+        fetchRelatedProducts(productData.category);
+      } else {
+        setError("Product not found");
+      }
+    } catch (err) {
+      console.error("Error fetching product:", err);
+      setError("Failed to load product");
+    }
+    setLoading(false);
+  };
+
+  fetchProduct();
+}, [slug]);
 
   const fetchRelatedProducts = async (category) => {
     try {
@@ -291,31 +326,7 @@ Is this available?`;
 
       {/* D. PERSONALIZATION OPTIONS: Follows the image on mobile */}
       <div className="space-y-4 my-6 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-        {/*<h3 className="font-bold text-gray-800 border-b pb-2 mb-4">Personalization Options</h3>
-        
-        <div className="flex flex-col gap-3">
-          <label className="flex items-center space-x-3 cursor-pointer group">
-            <input type="checkbox" checked={giftWrap} onChange={(e) => setGiftWrap(e.target.checked)} className="w-5 h-5 accent-purple-600 rounded" />
-            <span className="text-gray-700">Gift Wrapping Required</span>
-          </label>
-        </div>
-
-        <div className="mt-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">I need a Card (Kindly specify type)</label>
-          <select 
-            value={cardType} 
-            onChange={(e) => setCardType(e.target.value)}
-            className="w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-purple-200"
-          >
-            <option value="">No Card needed</option>
-            <option value="Birthday">Birthday</option>
-            <option value="Love/Romantic">Love/Romantic</option>
-            <option value="Anniversary">Anniversary</option>
-            <option value="Congratulations">Congratulations</option>
-            <option value="Other">Other (Specify below)</option>
-          </select>
-        </div>*/}
-
+       
         <div className="mt-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">Special instructions / Card Message</label>
           <textarea 
