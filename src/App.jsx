@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import EcommerceUI from "./pages/EcommerceUI";
 import ProductDetail from "./components/ProductDetail";
 import ProtectedRoute from "./components/ProtectedRoute";
+import About from "./pages/About";
 
 // Lazy-loaded: only fetched when someone actually visits /login or /dashboard
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -14,6 +15,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<EcommerceUI />} />
         <Route path="/product/:slug" element={<ProductDetail />} />
+        <Route path="/about" element={< About />} />
         <Route
           path="/login"
           element={

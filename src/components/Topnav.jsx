@@ -27,7 +27,7 @@ const Topnav = () => {
         </Link>
 
         {/* DESKTOP NAV */}
-        <div className="hidden md:flex items-center gap-10">
+        {/*<div className="hidden md:flex items-center gap-10">
           {['About', 'Shop', 'Contact'].map((item) => (
             <a 
               key={item}
@@ -39,7 +39,38 @@ const Topnav = () => {
               <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-black transition-all group-hover:w-full"></span>
             </a>
           ))}
-        </div>
+        </div>*/}
+
+          <div className="hidden md:flex items-center gap-10">
+  {[
+    { label: "About", to: "/about" },
+    { label: "Shop", to: "#products-section" },
+    { label: "Contact", to: "/#" },
+  ].map((item) =>
+    item.label === "Shop" ? (
+      <a
+        key={item.label}
+        href={item.to}
+        onClick={handleScrollToProducts}
+        className="text-[16px] font-bold text-zinc-500 hover:text-black transition-all duration-300 relative group"
+      >
+        {item.label}
+
+        <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-black transition-all group-hover:w-full"></span>
+      </a>
+    ) : (
+      <Link
+        key={item.label}
+        to={item.to}
+        className="text-[16px] font-bold text-zinc-500 hover:text-black transition-all duration-300 relative group"
+      >
+        {item.label}
+
+        <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-black transition-all group-hover:w-full"></span>
+      </Link>
+    )
+  )}
+</div>
 
         {/* RIGHT SECTION */}
         <div className="flex items-center gap-4">
@@ -65,7 +96,7 @@ const Topnav = () => {
 
       {/* MOBILE MENU OVERLAY */}
       <div className={`fixed inset-0 bg-black transition-all duration-500 ease-in-out ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} z-50 flex flex-col items-center justify-center gap-8`}>
-         <Link to="/" className="text-3xl font-black text-white hover:text-purple-500 transition" onClick={() => setIsOpen(false)}>ABOUT</Link>
+         <Link to="/about" className="text-3xl font-black text-white hover:text-purple-500 transition" onClick={() => setIsOpen(false)}>ABOUT</Link>
          <a href="#products-section" className="text-3xl font-black text-white hover:text-purple-500 transition" onClick={handleScrollToProducts}>SHOP</a>
          <Link to="/contact" className="text-3xl font-black text-white hover:text-purple-500 transition" onClick={() => setIsOpen(false)}>CONTACT</Link>
          
