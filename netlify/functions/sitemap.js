@@ -1,5 +1,5 @@
 // netlify/functions/sitemap.js
-const admin = require("firebase-admin");
+import admin from "firebase-admin";
 
 function slugify(text) {
   return text
@@ -24,7 +24,7 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 const BASE_URL = "https://moderntechgraphics.africa";
 
-exports.handler = async function () {
+export const handler = async function () {
   try {
     const now = new Date().toISOString();
 
