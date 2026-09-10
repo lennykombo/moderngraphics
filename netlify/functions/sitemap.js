@@ -1,5 +1,6 @@
 // netlify/functions/sitemap.js
-import admin from "firebase-admin";
+import { initializeApp, cert, getApps } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
 
 function slugify(text) {
   return text
@@ -11,18 +12,9 @@ function slugify(text) {
     .replace(/-+/g, "-");
 }
 
-console.log("[sitemap debug]", {
-  hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
-  hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
-  hasPrivateKey: !!process.env.FIREBASE_PRIVATE_KEY,
-  privateKeyLength: process.env.FIREBASE_PRIVATE_KEY
-    ? process.env.FIREBASE_PRIVATE_KEY.length
-    : 0,
-});
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
+if (!getApps().length) {
+  initializeApp({
+    credential: cert({
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       privateKey: (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n"),
@@ -30,7 +22,7 @@ if (!admin.apps.length) {
   });
 }
 
-const db = admin.firestore();
+const db = getFirestore();
 const BASE_URL = "https://moderntechgraphics.africa";
 
 export const handler = async function () {
