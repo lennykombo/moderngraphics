@@ -4,12 +4,12 @@ import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC-fx5omjaBOwJyySmXNKZ1Eri0I9b1i3A",
-  authDomain: "moderntech-1a943.firebaseapp.com",
-  projectId: "moderntech-1a943",
-  storageBucket: "moderntech-1a943.firebasestorage.app",
-  messagingSenderId: "693443635939",
-  appId: "1:693443635939:web:6f119c73b4f6b2b4a7f3d6"
+   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
