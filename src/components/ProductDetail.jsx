@@ -5,6 +5,7 @@ import { db } from "../components/firebaseconfig";
 import Topnav from "./Topnav";
 import { FaArrowLeft } from "react-icons/fa";
 import Footer from "./Footer";
+import { trackEvent } from "../utils/metaPixel";
 
 // 1. GSAP Imports
 import gsap from "gsap";
@@ -22,46 +23,13 @@ const ProductDetail = () => {
   const [error, setError] = useState(null);
   const [selectedMedia, setSelectedMedia] = useState("");
   const [relatedProducts, setRelatedProducts] = useState([]);
-  // --- NEW STATES FOR PERSONALIZATION ---
-//const [giftWrap, setGiftWrap] = useState(false);
-//const [engraving, setEngraving] = useState(false);
-//const [cardType, setCardType] = useState("");
 const [specialInstructions, setSpecialInstructions] = useState("");
 
   // 2. Ref for scoping
   const containerRef = useRef();
 
   // --- DATA FETCHING ---
-  /*useEffect(() => {
-    const fetchProduct = async () => {
-      setLoading(true);
-      try {
-        const productRef = doc(db, "products", id);
-        const productSnap = await getDoc(productRef);
-
-        if (productSnap.exists()) {
-          const productData = productSnap.data();
-          const gallery = [...(productData.images || [])];
-          if (productData.video) gallery.push(productData.video);
-
-          setProduct({ ...productData, gallery });
-          setSelectedMedia(gallery[0] || "");
-          fetchRelatedProducts(productData.category);
-        } else {
-          setError("Product not found");
-        }
-      } catch (err) {
-        console.error("Error fetching product:", err);
-        setError("Failed to load product");
-      }
-      setLoading(false);
-    };
-
-    fetchProduct();
-  }, [id]);*/
-
-
-  useEffect(() => {
+  /* useEffect(() => {
   const fetchProduct = async () => {
     setLoading(true);
     try {
@@ -91,6 +59,59 @@ const [specialInstructions, setSpecialInstructions] = useState("");
   };
 
   fetchProduct();
+}, [slug]);*/
+
+
+useEffect(() => {
+  const fetchProduct = async () => {
+    setLoading(true);
+
+    try {
+      // Extract the real Firestore ID from the end of the slug
+      // e.g. "silver-necklace-a1B2c3D4" -> "a1B2c3D4"
+      const id = slug.substring(slug.lastIndexOf("-") + 1);
+
+      const productRef = doc(db, "products", id);
+      const productSnap = await getDoc(productRef);
+
+      if (productSnap.exists()) {
+        const productData = productSnap.data();
+
+        // Track product view with Meta Pixel
+        trackEvent("ViewContent", {
+          content_name: productData.name,
+          content_type: "product",
+          content_ids: [id],
+          value: Number(productData.price) || 0,
+          currency: "KES",
+        });
+
+        const gallery = [...(productData.images || [])];
+
+        if (productData.video) {
+          gallery.push(productData.video);
+        }
+
+        setProduct({
+          ...productData,
+          gallery,
+        });
+
+        setSelectedMedia(gallery[0] || "");
+
+        fetchRelatedProducts(productData.category);
+      } else {
+        setError("Product not found");
+      }
+    } catch (err) {
+      console.error("Error fetching product:", err);
+      setError("Failed to load product");
+    }
+
+    setLoading(false);
+  };
+
+  fetchProduct();
 }, [slug]);
 
   const fetchRelatedProducts = async (category) => {
@@ -111,6 +132,13 @@ const [specialInstructions, setSpecialInstructions] = useState("");
   };
 
   const handleOrder = () => {
+     trackEvent("Contact", {
+    content_name: product.name,
+    content_type: "product",
+    content_ids: [id],
+    value: Number(product.price) || 0,
+    currency: "KES",
+  });
   // 1. Build the detailed message using the states
   const message = `*NEW ORDER REQUEST*
 --------------------------
@@ -153,13 +181,7 @@ Is this available?`;
 
     // 3. Text Details (Staggered slide in)
     // We target both mobile (.mobile-info) and desktop (.desktop-info) classes
-      /*.from([".mobile-info-item", ".desktop-info-item"], {
-        x: 20,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power2.out"
-      }, "-=0.6");*/
+    
 
       .from(".animate-text-item", {
        x: 20,
