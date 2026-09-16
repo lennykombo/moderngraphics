@@ -25,8 +25,8 @@ function Footer() {
 
           <div>
             <h3 className="font-semibold mb-3">Contact</h3>
-            <p className="text-sm">📞 0704702933</p>
-            <p className="text-sm">✉️ mtg@gmail.com</p>
+            <p className="text-sm">📞 0717050901</p>
+            <p className="text-sm">✉️ moderntechgraphic@gmail.com</p>
           </div>
 
           <div>
